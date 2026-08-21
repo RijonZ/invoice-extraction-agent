@@ -18,8 +18,9 @@ uploadRouter.post("/upload", upload.single("file"), async (req, res) => {
   const fileKey = await uploadInvoiceFile(buffer, originalname, mimetype);
 
   const inserted = await pool.query(
-    `INSERT INTO invoices (file_key, mime_type, status) VALUES ($1, $2, 'processing') RETURNING id`,
-    [fileKey, mimetype]
+    `INSERT INTO invoices (file_key, mime_type, status, created_by)
+     VALUES ($1, $2, 'processing', $3) RETURNING id`,
+    [fileKey, mimetype, req.user?.id ?? null]
   );
   const invoiceId = inserted.rows[0].id as string;
 

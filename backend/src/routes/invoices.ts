@@ -8,12 +8,17 @@ const VALID_STATUSES = new Set(["processing", "needs_review", "approved", "error
 
 invoicesRouter.get("/invoices", async (req, res) => {
   const status = typeof req.query.status === "string" ? req.query.status : undefined;
+  const isAdmin = req.user?.role === "admin";
 
   const conditions: string[] = [];
   const params: unknown[] = [];
   if (status && VALID_STATUSES.has(status)) {
     params.push(status);
     conditions.push(`i.status = $${params.length}`);
+  }
+  if (!isAdmin) {
+    params.push(req.user?.id);
+    conditions.push(`i.created_by = $${params.length}`);
   }
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -35,7 +40,7 @@ invoicesRouter.get("/invoices/:id", async (req, res) => {
     [req.params.id]
   );
   const invoice = invoiceResult.rows[0];
-  if (!invoice) {
+  if (!invoice || (req.user?.role !== "admin" && invoice.created_by !== req.user?.id)) {
     res.status(404).json({ error: "Invoice not found" });
     return;
   }
@@ -64,7 +69,7 @@ invoicesRouter.patch("/invoices/:id/correct", async (req, res) => {
 
   const current = await pool.query("SELECT * FROM invoices WHERE id = $1", [req.params.id]);
   const invoice = current.rows[0];
-  if (!invoice) {
+  if (!invoice || (req.user?.role !== "admin" && invoice.created_by !== req.user?.id)) {
     res.status(404).json({ error: "Invoice not found" });
     return;
   }
