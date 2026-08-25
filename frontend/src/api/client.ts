@@ -1,3 +1,10 @@
+import type {
+  AnalyticsSummary,
+  AuditLogEntry,
+  ManagedUser,
+  Vendor,
+  VendorDetail,
+} from "../types/admin";
 import type { User } from "../types/auth";
 import type { InvoiceDetailRecord, InvoiceSummary } from "../types/invoice";
 
@@ -41,6 +48,41 @@ export function correctInvoice(
     method: "PATCH",
     body: JSON.stringify({ corrections }),
   });
+}
+
+export function listVendors(): Promise<Vendor[]> {
+  return request("/vendors");
+}
+
+export function renameVendor(id: string, name: string): Promise<Vendor> {
+  return request(`/vendors/${id}`, { method: "PATCH", body: JSON.stringify({ name }) });
+}
+
+export async function mergeVendor(sourceId: string, targetId: string): Promise<void> {
+  await request(`/vendors/${sourceId}/merge/${targetId}`, { method: "POST" });
+}
+
+export function getVendor(id: string): Promise<VendorDetail> {
+  return request(`/vendors/${id}`);
+}
+
+export function getAnalyticsSummary(): Promise<AnalyticsSummary> {
+  return request("/analytics/summary");
+}
+
+export function listUsers(): Promise<ManagedUser[]> {
+  return request("/users");
+}
+
+export function updateUser(
+  id: string,
+  changes: { role?: "admin" | "user"; is_active?: boolean }
+): Promise<ManagedUser> {
+  return request(`/users/${id}`, { method: "PATCH", body: JSON.stringify(changes) });
+}
+
+export function listAuditLog(): Promise<AuditLogEntry[]> {
+  return request("/audit-log");
 }
 
 export function getMe(): Promise<User> {
