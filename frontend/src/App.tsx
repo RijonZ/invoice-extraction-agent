@@ -1,6 +1,7 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AccountSettings } from "./pages/AccountSettings";
 import { Analytics } from "./pages/Analytics";
 import { AuditLog } from "./pages/AuditLog";
 import { Dashboard } from "./pages/Dashboard";
@@ -39,6 +40,7 @@ export function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/invoices/:id" element={<InvoiceDetail />} />
         <Route path="/help" element={<Help />} />
+        <Route path="/account" element={<AccountSettings />} />
       </Route>
       <Route element={<AdminLayout />}>
         <Route path="/admin/vendors" element={<Vendors />} />

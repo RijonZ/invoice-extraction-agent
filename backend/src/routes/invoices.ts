@@ -5,9 +5,13 @@ import { getInvoiceFileUrl } from "../services/storage.js";
 export const invoicesRouter = Router();
 
 const VALID_STATUSES = new Set(["processing", "needs_review", "approved", "error"]);
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 invoicesRouter.get("/invoices", async (req, res) => {
   const status = typeof req.query.status === "string" ? req.query.status : undefined;
+  const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
+  const from = typeof req.query.from === "string" ? req.query.from : undefined;
+  const to = typeof req.query.to === "string" ? req.query.to : undefined;
   const isAdmin = req.user?.role === "admin";
 
   const conditions: string[] = [];
@@ -15,6 +19,18 @@ invoicesRouter.get("/invoices", async (req, res) => {
   if (status && VALID_STATUSES.has(status)) {
     params.push(status);
     conditions.push(`i.status = $${params.length}`);
+  }
+  if (search) {
+    params.push(`%${search}%`);
+    conditions.push(`(v.name ILIKE $${params.length} OR i.invoice_number ILIKE $${params.length})`);
+  }
+  if (from && ISO_DATE.test(from)) {
+    params.push(from);
+    conditions.push(`i.invoice_date >= $${params.length}`);
+  }
+  if (to && ISO_DATE.test(to)) {
+    params.push(to);
+    conditions.push(`i.invoice_date <= $${params.length}`);
   }
   if (!isAdmin) {
     params.push(req.user?.id);

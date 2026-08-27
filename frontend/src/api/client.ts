@@ -27,11 +27,17 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export interface InvoiceFilters {
   status?: string;
+  search?: string;
+  from?: string;
+  to?: string;
 }
 
 export function listInvoices(filters: InvoiceFilters = {}): Promise<InvoiceSummary[]> {
   const params = new URLSearchParams();
   if (filters.status) params.set("status", filters.status);
+  if (filters.search) params.set("search", filters.search);
+  if (filters.from) params.set("from", filters.from);
+  if (filters.to) params.set("to", filters.to);
   const query = params.toString();
   return request(`/invoices${query ? `?${query}` : ""}`);
 }
@@ -47,6 +53,20 @@ export function correctInvoice(
   return request(`/invoices/${id}/correct`, {
     method: "PATCH",
     body: JSON.stringify({ corrections }),
+  });
+}
+
+export function updateProfile(name: string): Promise<User> {
+  return request("/auth/me", { method: "PATCH", body: JSON.stringify({ name }) });
+}
+
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string
+): Promise<void> {
+  await request("/auth/change-password", {
+    method: "POST",
+    body: JSON.stringify({ currentPassword, newPassword }),
   });
 }
 
