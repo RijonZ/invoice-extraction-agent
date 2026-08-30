@@ -5,8 +5,6 @@ import { CRITICAL_FIELDS, extractedInvoiceSchema, type ExtractedInvoice } from "
 
 const client = new OpenAI({ apiKey: env.openaiApiKey });
 
-const MAX_ATTEMPTS = 3;
-
 const SUPPORTED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
 
 function buildDocumentBlock(fileBuffer: Buffer, mimeType: string) {
@@ -40,18 +38,18 @@ export interface ExtractionResult {
   attempts: number;
 }
 
-// Extract -> check for missing critical fields -> retry with a sharper
-// prompt if needed, up to MAX_ATTEMPTS.
 export async function extractInvoice(
   fileBuffer: Buffer,
-  mimeType: string
+  mimeType: string,
+  model: string,
+  maxAttempts: number
 ): Promise<ExtractionResult> {
   const documentBlock = buildDocumentBlock(fileBuffer, mimeType);
 
   let lastData: ExtractedInvoice | null = null;
   let lastMissing: string[] = [];
 
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     const instruction =
       attempt === 1
         ? BASE_INSTRUCTION
@@ -61,7 +59,7 @@ export async function extractInvoice(
           "absent from the document.";
 
     const response = await client.responses.parse({
-      model: env.extractionModel,
+      model,
       input: [
         {
           role: "user",
@@ -89,5 +87,5 @@ export async function extractInvoice(
     throw new Error("Extraction failed: no valid structured output after retries");
   }
 
-  return { data: lastData, missingCriticalFields: lastMissing, attempts: MAX_ATTEMPTS };
+  return { data: lastData, missingCriticalFields: lastMissing, attempts: maxAttempts };
 }

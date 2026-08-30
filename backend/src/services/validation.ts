@@ -1,6 +1,6 @@
 import type { ExtractedInvoice } from "../types/invoice.js";
 
-const AMOUNT_TOLERANCE = 0.02;
+const DEFAULT_AMOUNT_TOLERANCE = 0.02;
 
 function approximatelyEqual(a: number, b: number, tolerance: number): boolean {
   return Math.abs(a - b) <= tolerance;
@@ -8,9 +8,15 @@ function approximatelyEqual(a: number, b: number, tolerance: number): boolean {
 
 /**
  * Deterministic, non-LLM checks. Returns a list of human-readable problems;
- * an empty list means the invoice is safe to auto-approve.
+ * an empty list means the invoice is safe to auto-approve. `tolerance` is
+ * the admin-configurable amount-matching slack (see services/settings.ts);
+ * it defaults here so this function stays callable without a DB round trip.
  */
-export function validateInvoice(data: ExtractedInvoice, missingCriticalFields: string[]): string[] {
+export function validateInvoice(
+  data: ExtractedInvoice,
+  missingCriticalFields: string[],
+  tolerance: number = DEFAULT_AMOUNT_TOLERANCE
+): string[] {
   const errors: string[] = [];
 
   for (const field of missingCriticalFields) {
@@ -24,7 +30,7 @@ export function validateInvoice(data: ExtractedInvoice, missingCriticalFields: s
   const lineItemsWithAmount = data.line_items.filter((item) => item.amount !== null);
   if (lineItemsWithAmount.length > 0 && data.subtotal !== null) {
     const sum = lineItemsWithAmount.reduce((acc, item) => acc + (item.amount ?? 0), 0);
-    if (!approximatelyEqual(sum, data.subtotal, AMOUNT_TOLERANCE)) {
+    if (!approximatelyEqual(sum, data.subtotal, tolerance)) {
       errors.push(
         `Line items sum to ${sum.toFixed(2)} but the extracted subtotal is ${data.subtotal.toFixed(2)}.`
       );
@@ -33,7 +39,7 @@ export function validateInvoice(data: ExtractedInvoice, missingCriticalFields: s
 
   if (data.subtotal !== null && data.total !== null) {
     const expectedTotal = data.subtotal + (data.tax ?? 0);
-    if (!approximatelyEqual(expectedTotal, data.total, AMOUNT_TOLERANCE)) {
+    if (!approximatelyEqual(expectedTotal, data.total, tolerance)) {
       errors.push(
         `Subtotal (${data.subtotal.toFixed(2)}) + tax (${(data.tax ?? 0).toFixed(2)}) = ` +
           `${expectedTotal.toFixed(2)}, which does not match the extracted total ` +

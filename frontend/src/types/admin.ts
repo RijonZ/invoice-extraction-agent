@@ -50,6 +50,20 @@ export interface ManagedUser {
   created_at: string;
 }
 
+export interface AppSettings {
+  extraction_model: string;
+  amount_tolerance: number;
+  company_name: string;
+  max_extraction_attempts: number;
+  default_currency: string;
+  banner_message: string | null;
+}
+
+export interface PublicSettings {
+  company_name: string;
+  banner_message: string | null;
+}
+
 export interface AuditLogEntry {
   id: string;
   action: string;

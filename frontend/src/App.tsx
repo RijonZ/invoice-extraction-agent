@@ -8,6 +8,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Help } from "./pages/Help";
 import { InvoiceDetail } from "./pages/InvoiceDetail";
 import { Login } from "./pages/Login";
+import { Settings } from "./pages/Settings";
 import { Users } from "./pages/Users";
 import { Vendors } from "./pages/Vendors";
 import { VendorDetail } from "./pages/VendorDetail";
@@ -48,6 +49,7 @@ export function App() {
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/audit-log" element={<AuditLog />} />
+        <Route path="/admin/settings" element={<Settings />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

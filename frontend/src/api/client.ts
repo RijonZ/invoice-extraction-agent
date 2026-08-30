@@ -1,7 +1,9 @@
 import type {
   AnalyticsSummary,
+  AppSettings,
   AuditLogEntry,
   ManagedUser,
+  PublicSettings,
   Vendor,
   VendorDetail,
 } from "../types/admin";
@@ -68,6 +70,18 @@ export async function changePassword(
     method: "POST",
     body: JSON.stringify({ currentPassword, newPassword }),
   });
+}
+
+export function getPublicSettings(): Promise<PublicSettings> {
+  return request("/settings/public");
+}
+
+export function getAppSettings(): Promise<AppSettings> {
+  return request("/admin/settings");
+}
+
+export function updateAppSettings(changes: Partial<AppSettings>): Promise<AppSettings> {
+  return request("/admin/settings", { method: "PATCH", body: JSON.stringify(changes) });
 }
 
 export function listVendors(): Promise<Vendor[]> {
