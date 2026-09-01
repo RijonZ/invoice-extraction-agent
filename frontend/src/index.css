@@ -201,6 +201,168 @@ button {
   opacity: 1;
 }
 
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-surface-sunken);
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.field-row input:focus,
+.field-row select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background: var(--color-surface);
+}
+
+.payment-row-control {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cell-overdue {
+  color: var(--color-red-text);
+  font-weight: 600;
+}
+
+.save-button {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.7rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-accent);
+  color: white;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 120ms ease, box-shadow 120ms ease;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+}
+
+.save-button:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ---------- Inline actions / link buttons ---------- */
+
+.inline-action {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.inline-action:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.link-button:hover {
+  color: var(--color-accent);
+}
+
+.inline-action-link {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.inline-action-link:hover {
+  color: var(--color-accent-hover);
+}
+
+/* ---------- Vendors merge panel ---------- */
+
+.merge-panel {
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.merge-panel h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.85rem;
+}
+
+.merge-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.merge-controls select {
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+  font-size: 0.85rem;
+  font-family: inherit;
+  min-width: 180px;
+}
+
+.text-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--color-text);
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background: var(--color-surface);
+}
+
+.merge-controls span {
+  color: var(--color-text-tertiary);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.stat-card-icon-orange {
+  background: var(--color-orange-soft);
+  color: var(--color-orange-text);
+}
+
+.stat-card-icon-green {
+  background: var(--color-green-soft);
+  color: var(--color-green-text);
+}
+
+.stat-card-icon-red {
+  background: var(--color-red-soft);
   color: var(--color-red-text);
 }
 
