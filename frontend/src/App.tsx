@@ -8,6 +8,8 @@ import { Dashboard } from "./pages/Dashboard";
 import { Help } from "./pages/Help";
 import { InvoiceDetail } from "./pages/InvoiceDetail";
 import { Login } from "./pages/Login";
+import { MyActivity } from "./pages/MyActivity";
+import { MyStats } from "./pages/MyStats";
 import { Settings } from "./pages/Settings";
 import { Users } from "./pages/Users";
 import { Vendors } from "./pages/Vendors";
@@ -40,6 +42,8 @@ export function App() {
       <Route element={<AuthenticatedLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/invoices/:id" element={<InvoiceDetail />} />
+        <Route path="/activity" element={<MyActivity />} />
+        <Route path="/stats" element={<MyStats />} />
         <Route path="/help" element={<Help />} />
         <Route path="/account" element={<AccountSettings />} />
       </Route>

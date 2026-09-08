@@ -64,6 +64,20 @@ export interface PublicSettings {
   banner_message: string | null;
 }
 
+export interface MonthlyUploadPoint {
+  month: string;
+  count: number;
+  total: number;
+}
+
+export interface MyStats {
+  total_invoices: number;
+  total_spend: number;
+  status_breakdown: StatusCount[];
+  monthly_uploads: MonthlyUploadPoint[];
+  avg_turnaround_hours: number | null;
+}
+
 export interface AuditLogEntry {
   id: string;
   action: string;

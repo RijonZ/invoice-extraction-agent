@@ -8,10 +8,14 @@ import {
   IconClipboard,
   IconDashboard,
   IconHelp,
+  IconHistory,
+  IconTrendUp,
   IconUsers,
 } from "./icons";
 
-const WORKSPACE_LINKS: Array<{ to: string; labelKey: TranslationKey; icon: typeof IconHelp }> = [
+const WORKSPACE_LINKS: Array<{ to: string; labelKey: TranslationKey; icon: typeof IconTrendUp }> = [
+  { to: "/stats", labelKey: "nav.myStats", icon: IconTrendUp },
+  { to: "/activity", labelKey: "nav.myActivity", icon: IconHistory },
   { to: "/help", labelKey: "nav.help", icon: IconHelp },
 ];
 

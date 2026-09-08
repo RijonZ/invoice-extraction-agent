@@ -3,6 +3,7 @@ import type {
   AppSettings,
   AuditLogEntry,
   ManagedUser,
+  MyStats,
   PublicSettings,
   Vendor,
   VendorDetail,
@@ -117,6 +118,14 @@ export function updateUser(
 
 export function listAuditLog(): Promise<AuditLogEntry[]> {
   return request("/audit-log");
+}
+
+export function listMyActivity(): Promise<AuditLogEntry[]> {
+  return request("/audit-log/me");
+}
+
+export function getMyStats(): Promise<MyStats> {
+  return request("/me/stats");
 }
 
 export function getMe(): Promise<User> {
