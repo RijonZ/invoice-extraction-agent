@@ -18,6 +18,17 @@ export interface InvoiceSummary {
   created_at: string;
 }
 
+export interface Notification {
+  invoice_id: string;
+  status: InvoiceStatus;
+  vendor_name: string | null;
+  invoice_number: string | null;
+  invoice_date: string | null;
+  total: number | null;
+  created_at: string;
+  is_read: boolean;
+}
+
 export interface InvoiceDetailRecord extends InvoiceSummary {
   currency: string | null;
   subtotal: number | null;

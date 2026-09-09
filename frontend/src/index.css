@@ -201,6 +201,143 @@ button {
   opacity: 1;
 }
 
+}
+
+.status-processing {
+  background: var(--color-amber-soft);
+  color: var(--color-amber-text);
+}
+
+.status-needs_review {
+  background: var(--color-orange-soft);
+  color: var(--color-orange-text);
+}
+
+.status-approved {
+  background: var(--color-green-soft);
+  color: var(--color-green-text);
+}
+
+.status-error {
+  background: var(--color-red-soft);
+  color: var(--color-red-text);
+}
+
+/* ---------- Invoice detail ---------- */
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.detail-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.detail-meta {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  margin: 0.35rem 0 1.5rem;
+}
+
+.validation-errors {
+  background: var(--color-orange-soft);
+  border: 1px solid #fdba74;
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--color-orange-text);
+}
+
+.validation-errors strong {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.validation-errors ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.validation-errors li {
+  margin-bottom: 0.2rem;
+}
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-preview {
+  position: sticky;
+  top: 1.5rem;
+  overflow: hidden;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: 78vh;
+  border: none;
+  display: block;
+}
+
+.invoice-image {
+  width: 100%;
+  display: block;
+}
+
+.detail-fields {
+  padding: 1.5rem;
+}
+
+.detail-fields h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.detail-fields h2:not(:first-child) {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.field-row-label {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  width: 110px;
+}
+
+.field-row input,
+.field-row select {
+  flex: 1;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
   font-family: inherit;
@@ -419,6 +556,7 @@ button {
   font-weight: 600;
   margin: 0;
 }
+
 
 
 

@@ -9,7 +9,7 @@ import type {
   VendorDetail,
 } from "../types/admin";
 import type { User } from "../types/auth";
-import type { InvoiceDetailRecord, InvoiceSummary } from "../types/invoice";
+import type { InvoiceDetailRecord, InvoiceSummary, Notification } from "../types/invoice";
 
 const BASE_URL = "/api";
 
@@ -126,6 +126,22 @@ export function listMyActivity(): Promise<AuditLogEntry[]> {
 
 export function getMyStats(): Promise<MyStats> {
   return request("/me/stats");
+}
+
+export function listNotifications(): Promise<Notification[]> {
+  return request("/notifications");
+}
+
+export async function markNotificationRead(invoiceId: string): Promise<void> {
+  await request(`/notifications/${invoiceId}/read`, { method: "POST" });
+}
+
+export async function markAllNotificationsRead(): Promise<void> {
+  await request("/notifications/read-all", { method: "POST" });
+}
+
+export async function deleteNotification(invoiceId: string): Promise<void> {
+  await request(`/notifications/${invoiceId}`, { method: "DELETE" });
 }
 
 export function getMe(): Promise<User> {
