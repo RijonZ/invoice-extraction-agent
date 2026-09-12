@@ -64,6 +64,12 @@ export interface PublicSettings {
   banner_message: string | null;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  created_at: string;
+}
+
 export interface MonthlyUploadPoint {
   month: string;
   count: number;

@@ -1,4 +1,5 @@
 export type InvoiceStatus = "processing" | "needs_review" | "approved" | "error";
+export type PaymentStatus = "paid" | "unpaid" | "partial";
 
 export interface LineItem {
   id: string;
@@ -16,6 +17,11 @@ export interface InvoiceSummary {
   total: number | null;
   status: InvoiceStatus;
   created_at: string;
+  category_id: string | null;
+  category_name: string | null;
+  due_date: string | null;
+  payment_status: PaymentStatus;
+  amount_paid: number;
 }
 
 export interface Notification {

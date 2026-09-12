@@ -4,12 +4,14 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AccountSettings } from "./pages/AccountSettings";
 import { Analytics } from "./pages/Analytics";
 import { AuditLog } from "./pages/AuditLog";
+import { Categories } from "./pages/Categories";
 import { Dashboard } from "./pages/Dashboard";
 import { Help } from "./pages/Help";
 import { InvoiceDetail } from "./pages/InvoiceDetail";
 import { Login } from "./pages/Login";
 import { MyActivity } from "./pages/MyActivity";
 import { MyStats } from "./pages/MyStats";
+import { Payments } from "./pages/Payments";
 import { Settings } from "./pages/Settings";
 import { Users } from "./pages/Users";
 import { Vendors } from "./pages/Vendors";
@@ -44,6 +46,7 @@ export function App() {
         <Route path="/invoices/:id" element={<InvoiceDetail />} />
         <Route path="/activity" element={<MyActivity />} />
         <Route path="/stats" element={<MyStats />} />
+        <Route path="/payments" element={<Payments />} />
         <Route path="/help" element={<Help />} />
         <Route path="/account" element={<AccountSettings />} />
       </Route>
@@ -54,6 +57,7 @@ export function App() {
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/audit-log" element={<AuditLog />} />
         <Route path="/admin/settings" element={<Settings />} />
+        <Route path="/admin/categories" element={<Categories />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -2,6 +2,7 @@ import type {
   AnalyticsSummary,
   AppSettings,
   AuditLogEntry,
+  Category,
   ManagedUser,
   MyStats,
   PublicSettings,
@@ -9,7 +10,7 @@ import type {
   VendorDetail,
 } from "../types/admin";
 import type { User } from "../types/auth";
-import type { InvoiceDetailRecord, InvoiceSummary, Notification } from "../types/invoice";
+import type { InvoiceDetailRecord, InvoiceSummary, Notification, PaymentStatus } from "../types/invoice";
 
 const BASE_URL = "/api";
 
@@ -83,6 +84,41 @@ export function getAppSettings(): Promise<AppSettings> {
 
 export function updateAppSettings(changes: Partial<AppSettings>): Promise<AppSettings> {
   return request("/admin/settings", { method: "PATCH", body: JSON.stringify(changes) });
+}
+
+export function setInvoiceCategory(
+  id: string,
+  categoryId: string | null
+): Promise<{ id: string; category_id: string | null }> {
+  return request(`/invoices/${id}/category`, {
+    method: "PATCH",
+    body: JSON.stringify({ category_id: categoryId }),
+  });
+}
+
+export function updateInvoicePayment(
+  id: string,
+  changes: { due_date?: string | null; payment_status?: PaymentStatus; amount_paid?: number }
+): Promise<InvoiceDetailRecord> {
+  return request(`/invoices/${id}/payment`, { method: "PATCH", body: JSON.stringify(changes) });
+}
+
+export const EXPORT_CSV_URL = `${BASE_URL}/invoices/export`;
+
+export function listCategories(): Promise<Category[]> {
+  return request("/categories");
+}
+
+export function createCategory(name: string): Promise<Category> {
+  return request("/categories", { method: "POST", body: JSON.stringify({ name }) });
+}
+
+export function renameCategory(id: string, name: string): Promise<Category> {
+  return request(`/categories/${id}`, { method: "PATCH", body: JSON.stringify({ name }) });
+}
+
+export async function deleteCategory(id: string): Promise<void> {
+  await request(`/categories/${id}`, { method: "DELETE" });
 }
 
 export function listVendors(): Promise<Vendor[]> {
