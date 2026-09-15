@@ -5,6 +5,7 @@ import type {
   Category,
   ManagedUser,
   MyStats,
+  PaymentsSummary,
   PublicSettings,
   Vendor,
   VendorDetail,
@@ -119,6 +120,10 @@ export function renameCategory(id: string, name: string): Promise<Category> {
 
 export async function deleteCategory(id: string): Promise<void> {
   await request(`/categories/${id}`, { method: "DELETE" });
+}
+
+export function getPaymentsSummary(): Promise<PaymentsSummary> {
+  return request("/payments/summary");
 }
 
 export function listVendors(): Promise<Vendor[]> {

@@ -43,4 +43,5 @@ export interface InvoiceDetailRecord extends InvoiceSummary {
   file_url: string;
   mime_type: string;
   line_items: LineItem[];
+  paid_at: string | null;
 }

@@ -64,6 +64,14 @@ export interface PublicSettings {
   banner_message: string | null;
 }
 
+export interface PaymentsSummary {
+  total_outstanding: number;
+  overdue_count: number;
+  overdue_total: number;
+  partial_count: number;
+  partial_total: number;
+}
+
 export interface Category {
   id: string;
   name: string;
