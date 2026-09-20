@@ -12,7 +12,7 @@ import { IconAlertTriangle, IconBell, IconCheckCircle, IconX } from "./icons";
 
 function formatMoney(value: number | null): string {
   if (value === null) return "—";
-  return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 interface NotificationsPanelProps {

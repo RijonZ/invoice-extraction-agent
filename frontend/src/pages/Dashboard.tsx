@@ -19,7 +19,7 @@ const SEARCH_DEBOUNCE_MS = 300;
 
 function formatMoney(value: number | null): string {
   if (value === null) return "—";
-  return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function isOverdue(invoice: InvoiceSummary): boolean {

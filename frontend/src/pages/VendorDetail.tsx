@@ -7,7 +7,7 @@ import type { VendorDetail as VendorDetailRecord } from "../types/admin";
 
 function formatMoney(value: number | null): string {
   if (value === null) return "—";
-  return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 export function VendorDetail() {
