@@ -16,6 +16,7 @@ export const lineItemSchema = z
 export const extractedInvoiceSchema = z
   .object({
     vendor_name: z.string().nullable(),
+    client_name: z.string().nullable(),
     invoice_number: z.string().nullable(),
     invoice_date: z.string().nullable().describe("ISO 8601 date, e.g. 2026-03-14"),
     currency: z.string().nullable().describe("ISO 4217 currency code, e.g. USD"),
@@ -37,6 +38,7 @@ export type InvoiceStatus = "processing" | "needs_review" | "approved" | "error"
 export interface InvoiceRecord {
   id: string;
   vendor_id: string | null;
+  client_name: string | null;
   invoice_number: string | null;
   invoice_date: string | null;
   currency: string | null;

@@ -180,6 +180,7 @@ export function Dashboard() {
             <thead>
               <tr>
                 <th>{t("common.colVendor")}</th>
+                <th>{t("common.colClient")}</th>
                 <th>{t("common.colInvoiceNumber")}</th>
                 <th>{t("common.colDate")}</th>
                 <th>{t("common.colTotal")}</th>
@@ -192,6 +193,9 @@ export function Dashboard() {
                 <tr key={invoice.id}>
                   <td>
                     <Link to={`/invoices/${invoice.id}`}>{invoice.vendor_name ?? t("common.unknownVendor")}</Link>
+                  </td>
+                  <td className={invoice.client_name ? "" : "cell-muted"}>
+                    {invoice.client_name ?? "—"}
                   </td>
                   <td className={invoice.invoice_number ? "" : "cell-muted"}>
                     {invoice.invoice_number ?? "—"}

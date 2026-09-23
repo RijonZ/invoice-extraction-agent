@@ -18,6 +18,7 @@ const SELECT_INVOICE = `
 
 const CSV_COLUMNS = [
   "vendor_name",
+  "client_name",
   "invoice_number",
   "invoice_date",
   "currency",
@@ -152,6 +153,7 @@ invoicesRouter.patch("/invoices/:id/correct", async (req, res) => {
     "subtotal",
     "tax",
     "total",
+    "client_name",
   ]);
 
   const setClauses: string[] = [];

@@ -12,6 +12,7 @@ export interface LineItem {
 export interface InvoiceSummary {
   id: string;
   vendor_name: string | null;
+  client_name: string | null;
   invoice_number: string | null;
   invoice_date: string | null;
   total: number | null;

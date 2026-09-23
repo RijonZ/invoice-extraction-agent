@@ -3,6 +3,11 @@ import { extractInvoice } from "./extraction.js";
 import { getSettings } from "./settings.js";
 import { validateInvoice } from "./validation.js";
 
+// The model is instructed to return null for a date it can't find, but
+// structured-output schemas only constrain type (string), not format — an
+// unparseable value here would otherwise reach the Postgres DATE column and
+// fail the whole write. Treat anything that isn't a real calendar date as
+// missing rather than crashing the pipeline.
 function normalizeDate(value: string | null): { date: string | null; wasInvalid: boolean } {
   if (value === null) return { date: null, wasInvalid: false };
   const isValid = /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value));
@@ -24,6 +29,11 @@ async function findOrCreateVendor(name: string): Promise<string> {
   return inserted.rows[0].id as string;
 }
 
+/**
+ * extract -> validate -> (retry lives inside extractInvoice) -> store.
+ * Runs after the invoice row and file are already persisted, so a failure
+ * here just leaves the invoice in `error` status rather than losing data.
+ */
 export async function processInvoice(
   invoiceId: string,
   fileBuffer: Buffer,
@@ -44,18 +54,22 @@ export async function processInvoice(
         `Extracted invoice_date ("${data.invoice_date}") is not a valid ISO date and was dropped.`
       );
     }
+    // The document itself never states a currency for some vendors (e.g. a
+    // domestic receipt) — fall back to the admin-configured default instead
+    // of leaving it null.
     const currency = data.currency ?? settings.default_currency;
     const vendorId = data.vendor_name ? await findOrCreateVendor(data.vendor_name) : null;
     const status = validationErrors.length > 0 ? "needs_review" : "approved";
 
     await pool.query(
       `UPDATE invoices SET
-         vendor_id = $1, invoice_number = $2, invoice_date = $3, currency = $4,
-         subtotal = $5, tax = $6, total = $7, status = $8,
-         validation_errors = $9, raw_extraction = $10, updated_at = now()
-       WHERE id = $11`,
+         vendor_id = $1, client_name = $2, invoice_number = $3, invoice_date = $4, currency = $5,
+         subtotal = $6, tax = $7, total = $8, status = $9,
+         validation_errors = $10, raw_extraction = $11, updated_at = now()
+       WHERE id = $12`,
       [
         vendorId,
+        data.client_name,
         data.invoice_number,
         invoiceDate,
         currency,
