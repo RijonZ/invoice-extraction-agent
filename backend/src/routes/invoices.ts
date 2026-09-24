@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { pool } from "../db/pool.js";
 import { logAudit } from "../services/audit.js";
-import { getInvoiceFileUrl } from "../services/storage.js";
+import { processInvoice } from "../services/orchestrator.js";
+import { getInvoiceFileBuffer, getInvoiceFileUrl } from "../services/storage.js";
 
 export const invoicesRouter = Router();
 
@@ -208,6 +209,31 @@ async function loadOwnedInvoice(req: { params: { id: string }; user?: { id: stri
   }
   return invoice;
 }
+
+// Re-runs extraction against the already-stored file. Exists for invoices
+// processed before a field (e.g. client_name) was added to the extraction
+// prompt — this lets them pick it up without re-uploading.
+invoicesRouter.post("/invoices/:id/reprocess", async (req, res) => {
+  const invoice = await loadOwnedInvoice(req);
+  if (!invoice) {
+    res.status(404).json({ error: "Invoice not found" });
+    return;
+  }
+
+  const fileRow = await pool.query("SELECT file_key, mime_type FROM invoices WHERE id = $1", [req.params.id]);
+  const { file_key: fileKey, mime_type: mimeType } = fileRow.rows[0];
+
+  const fileBuffer = await getInvoiceFileBuffer(fileKey);
+  await pool.query("UPDATE invoices SET status = 'processing', updated_at = now() WHERE id = $1", [
+    req.params.id,
+  ]);
+  await processInvoice(req.params.id, fileBuffer, mimeType);
+
+  await logAudit(req.user?.id ?? null, "invoice.reprocess", "invoice", req.params.id, {});
+
+  const updated = await pool.query(`${SELECT_INVOICE} WHERE i.id = $1`, [req.params.id]);
+  res.json(updated.rows[0]);
+});
 
 invoicesRouter.patch("/invoices/:id/category", async (req, res) => {
   const { category_id } = req.body ?? {};

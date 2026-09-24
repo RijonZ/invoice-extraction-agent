@@ -185,6 +185,10 @@ export async function deleteNotification(invoiceId: string): Promise<void> {
   await request(`/notifications/${invoiceId}`, { method: "DELETE" });
 }
 
+export function reprocessInvoice(id: string): Promise<InvoiceDetailRecord> {
+  return request(`/invoices/${id}/reprocess`, { method: "POST" });
+}
+
 export function getMe(): Promise<User> {
   return request("/auth/me");
 }

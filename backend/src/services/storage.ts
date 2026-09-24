@@ -43,3 +43,16 @@ export async function getInvoiceFileUrl(key: string): Promise<string> {
   // 1 hour presigned URL, long enough for a review-dashboard session.
   return minioClient.presignedGetObject(env.minio.bucket, key, 60 * 60);
 }
+
+// Used to re-run extraction against the original file (e.g. after the
+// extraction prompt learns to pull a new field) without asking the user to
+// re-upload anything.
+export async function getInvoiceFileBuffer(key: string): Promise<Buffer> {
+  await ensureBucket();
+  const stream = await minioClient.getObject(env.minio.bucket, key);
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) {
+    chunks.push(chunk as Buffer);
+  }
+  return Buffer.concat(chunks);
+}
