@@ -12,6 +12,7 @@ import { Login } from "./pages/Login";
 import { MyActivity } from "./pages/MyActivity";
 import { MyStats } from "./pages/MyStats";
 import { Payments } from "./pages/Payments";
+import { PaymentSummary } from "./pages/PaymentSummary";
 import { Settings } from "./pages/Settings";
 import { Users } from "./pages/Users";
 import { Vendors } from "./pages/Vendors";
@@ -47,6 +48,7 @@ export function App() {
         <Route path="/activity" element={<MyActivity />} />
         <Route path="/stats" element={<MyStats />} />
         <Route path="/payments" element={<Payments />} />
+        <Route path="/payment-summary" element={<PaymentSummary />} />
         <Route path="/help" element={<Help />} />
         <Route path="/account" element={<AccountSettings />} />
       </Route>
