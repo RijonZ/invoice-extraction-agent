@@ -35,6 +35,9 @@ export interface InvoiceFilters {
   search?: string;
   from?: string;
   to?: string;
+  category?: string;
+  payment_status?: PaymentStatus;
+  overdue?: boolean;
 }
 
 export function listInvoices(filters: InvoiceFilters = {}): Promise<InvoiceSummary[]> {
@@ -43,6 +46,9 @@ export function listInvoices(filters: InvoiceFilters = {}): Promise<InvoiceSumma
   if (filters.search) params.set("search", filters.search);
   if (filters.from) params.set("from", filters.from);
   if (filters.to) params.set("to", filters.to);
+  if (filters.category) params.set("category", filters.category);
+  if (filters.payment_status) params.set("payment_status", filters.payment_status);
+  if (filters.overdue) params.set("overdue", "true");
   const query = params.toString();
   return request(`/invoices${query ? `?${query}` : ""}`);
 }
