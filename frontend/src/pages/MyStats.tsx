@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { getMyStats } from "../api/client";
 import { ColumnChart } from "../components/charts/ColumnChart";
-import { IconAlertTriangle, IconChart, IconClipboard, IconHistory } from "../components/icons";
+import {
+  IconChart,
+  IconCheckCircle,
+  IconChevronLeft,
+  IconChevronRight,
+  IconClipboard,
+  IconTrendUp,
+} from "../components/icons";
 import { useLanguage } from "../context/LanguageContext";
 import type { MyStats as MyStatsRecord } from "../types/admin";
 
@@ -12,18 +19,15 @@ function formatMoney(value: number): string {
 export function MyStats() {
   const { t } = useLanguage();
 
-  function formatTurnaround(hours: number | null): string {
-    if (hours === null) return "—";
-    if (hours < 1) return `${Math.round(hours * 60)} ${t("common.min")}`;
-    if (hours < 48) return `${hours.toFixed(1)} ${t("common.hrs")}`;
-    return `${(hours / 24).toFixed(1)} ${t("common.days")}`;
-  }
-
   const [stats, setStats] = useState<MyStatsRecord | null>(null);
+  const [year, setYear] = useState<number | null>(null);
 
   useEffect(() => {
-    getMyStats().then(setStats);
-  }, []);
+    getMyStats(year ?? undefined).then((data) => {
+      setStats(data);
+      setYear(data.selected_year);
+    });
+  }, [year]);
 
   if (!stats) {
     return (
@@ -33,9 +37,17 @@ export function MyStats() {
     );
   }
 
-  const needsReview = stats.status_breakdown.find((s) => s.status === "needs_review")?.count ?? 0;
-  const thisMonth = new Date().toISOString().slice(0, 7);
-  const thisMonthCount = stats.monthly_uploads.find((m) => m.month === thisMonth)?.count ?? 0;
+  const approved = stats.status_breakdown.find((s) => s.status === "approved")?.count ?? 0;
+  const avgPerInvoice = stats.total_invoices > 0 ? stats.total_spend / stats.total_invoices : 0;
+
+  // available_years is sorted newest-first, so index 0 is the most recent
+  // year with data and the last index is the oldest.
+  const years = stats.available_years;
+  const yearIndex = years.indexOf(stats.selected_year);
+  const canGoNewer = yearIndex > 0;
+  const canGoOlder = yearIndex !== -1 && yearIndex < years.length - 1;
+
+  const yearTotal = stats.monthly_uploads.reduce((sum, m) => sum + m.count, 0);
 
   return (
     <div className="page">
@@ -62,27 +74,51 @@ export function MyStats() {
           <div className="stat-card-label">{t("myStats.statSpend")}</div>
         </div>
         <div className="card stat-card">
-          <div className="stat-card-icon stat-card-icon-orange">
-            <IconAlertTriangle width={17} height={17} />
+          <div className="stat-card-icon stat-card-icon-green">
+            <IconCheckCircle width={17} height={17} />
           </div>
-          <div className="stat-card-value">{needsReview}</div>
-          <div className="stat-card-label">{t("myStats.statNeedsReview")}</div>
+          <div className="stat-card-value">{approved}</div>
+          <div className="stat-card-label">{t("myStats.statApproved")}</div>
         </div>
         <div className="card stat-card">
           <div className="stat-card-icon stat-card-icon-amber">
-            <IconHistory width={17} height={17} />
+            <IconTrendUp width={17} height={17} />
           </div>
-          <div className="stat-card-value">{formatTurnaround(stats.avg_turnaround_hours)}</div>
-          <div className="stat-card-label">{t("myStats.statAvgReview")}</div>
+          <div className="stat-card-value">{formatMoney(avgPerInvoice)}</div>
+          <div className="stat-card-label">{t("myStats.statAvgPerInvoice")}</div>
         </div>
       </div>
 
       <div className="card analytics-card">
-        <h2>{t("myStats.spendPerMonth")}</h2>
+        <div className="chart-header-row">
+          <h2>{t("myStats.spendPerMonth")}</h2>
+          <div className="year-switcher">
+            <button
+              type="button"
+              className="year-switcher-btn"
+              aria-label={t("myStats.prevYearAria")}
+              disabled={!canGoOlder}
+              onClick={() => setYear(years[yearIndex + 1])}
+            >
+              <IconChevronLeft width={15} height={15} />
+            </button>
+            <span className="year-switcher-value">{stats.selected_year}</span>
+            <button
+              type="button"
+              className="year-switcher-btn"
+              aria-label={t("myStats.nextYearAria")}
+              disabled={!canGoNewer}
+              onClick={() => setYear(years[yearIndex - 1])}
+            >
+              <IconChevronRight width={15} height={15} />
+            </button>
+          </div>
+        </div>
         <p className="page-subtitle" style={{ marginBottom: "1rem" }}>
-          {t("myStats.purchasesThisMonth", {
-            count: thisMonthCount,
-            noun: t(thisMonthCount === 1 ? "common.purchaseSingular" : "common.purchasePlural"),
+          {t("myStats.purchasesInYear", {
+            count: yearTotal,
+            year: stats.selected_year,
+            noun: t(yearTotal === 1 ? "common.purchaseSingular" : "common.purchasePlural"),
           })}
         </p>
         <ColumnChart

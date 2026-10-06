@@ -89,7 +89,8 @@ export interface MyStats {
   total_spend: number;
   status_breakdown: StatusCount[];
   monthly_uploads: MonthlyUploadPoint[];
-  avg_turnaround_hours: number | null;
+  available_years: number[];
+  selected_year: number;
 }
 
 export interface AuditLogEntry {

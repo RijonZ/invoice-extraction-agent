@@ -2004,6 +2004,58 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- Year switcher (chart headers) ---------- */
+
+.chart-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.year-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.year-switcher-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.year-switcher-btn:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+  background: var(--color-surface-sunken);
+}
+
+.year-switcher-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.year-switcher-value {
+  min-width: 3.5ch;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Row avatar (table cells) ---------- */
 
 .row-avatar {

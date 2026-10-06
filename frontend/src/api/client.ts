@@ -171,8 +171,8 @@ export function listMyActivity(): Promise<AuditLogEntry[]> {
   return request("/audit-log/me");
 }
 
-export function getMyStats(): Promise<MyStats> {
-  return request("/me/stats");
+export function getMyStats(year?: number): Promise<MyStats> {
+  return request(`/me/stats${year ? `?year=${year}` : ""}`);
 }
 
 export function listNotifications(): Promise<Notification[]> {
