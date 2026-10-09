@@ -53,6 +53,7 @@ export const en = {
   "common.colAmount": "Amount",
   "common.colPayment": "Payment",
   "common.noData": "No data yet.",
+  "common.average": "Average",
   "common.monthlyUploadsAria": "Monthly uploads",
 
   // Navigation / Layout
@@ -406,6 +407,7 @@ export const sq: Record<TranslationKey, string> = {
   "common.colAmount": "Shuma",
   "common.colPayment": "Pagesa",
   "common.noData": "Ende nuk ka të dhëna.",
+  "common.average": "Mesatarja",
   "common.monthlyUploadsAria": "Ngarkimet mujore",
 
   "nav.invoices": "Faturat",
