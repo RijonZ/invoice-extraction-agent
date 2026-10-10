@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { EXPORT_CSV_URL, listInvoices } from "../api/client";
 import { UploadDropzone } from "../components/UploadDropzone";
+import { IconAlertTriangle, IconCheckCircle, IconClipboard, IconX } from "../components/icons";
 import { useLanguage } from "../context/LanguageContext";
 import { translateCategoryName } from "../i18n/categoryNames";
 import type { TranslationKey } from "../i18n/translations";
@@ -103,18 +104,30 @@ export function Dashboard() {
 
       <div className="stat-grid">
         <div className="card stat-card">
+          <div className="stat-card-icon">
+            <IconClipboard width={17} height={17} />
+          </div>
           <div className="stat-card-value">{allInvoices.length}</div>
           <div className="stat-card-label">{t("dashboard.statTotal")}</div>
         </div>
         <div className="card stat-card">
+          <div className="stat-card-icon stat-card-icon-orange">
+            <IconAlertTriangle width={17} height={17} />
+          </div>
           <div className="stat-card-value">{counts.needs_review}</div>
           <div className="stat-card-label">{t("dashboard.statNeedsReview")}</div>
         </div>
         <div className="card stat-card">
+          <div className="stat-card-icon stat-card-icon-green">
+            <IconCheckCircle width={17} height={17} />
+          </div>
           <div className="stat-card-value">{counts.approved}</div>
           <div className="stat-card-label">{t("dashboard.statApproved")}</div>
         </div>
         <div className="card stat-card">
+          <div className="stat-card-icon stat-card-icon-red">
+            <IconX width={17} height={17} />
+          </div>
           <div className="stat-card-value">{counts.error}</div>
           <div className="stat-card-label">{t("dashboard.statError")}</div>
         </div>
