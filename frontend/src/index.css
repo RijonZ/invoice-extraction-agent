@@ -71,6 +71,7 @@ a {
 
 button {
   font-family: inherit;
+  cursor: pointer;
 }
 
 /* ---------- App shell (sidebar layout) ---------- */
@@ -2292,4 +2293,95 @@ button {
   color: var(--color-accent-soft-text);
   font-size: 0.78rem;
   font-weight: 600;
+}
+
+/* ---------- Print / PDF export ---------- */
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 1.2cm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  .no-print,
+  .sidebar,
+  .sidebar-backdrop,
+  .topbar,
+  .app-banner {
+    display: none !important;
+  }
+
+  html,
+  body {
+    height: auto;
+  }
+
+  .app-shell {
+    display: block;
+    min-height: 0;
+  }
+
+  .app-content {
+    width: 100%;
+  }
+
+  .page {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  body {
+    background: white;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  .stat-card {
+    break-inside: avoid;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  .print-only table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+  }
+
+  .print-only th,
+  .print-only td {
+    padding: 0.4rem 0.5rem;
+    font-size: 10px;
+    overflow-wrap: break-word;
+  }
+
+  .print-only tr {
+    break-inside: avoid;
+  }
+
+  .print-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .print-filter-line {
+    color: #555;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+  }
 }

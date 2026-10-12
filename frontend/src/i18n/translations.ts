@@ -317,6 +317,7 @@ export const en = {
 
   // Payment summary
   "paymentSummary.title": "Payment summary",
+  "paymentSummary.exportPdf": "Export PDF",
   "paymentSummary.subtitle": "How much has been invoiced, how much of it is paid, and what's left.",
   "paymentSummary.statCount": "Invoices",
   "paymentSummary.statInvoiced": "Total invoiced",
@@ -653,6 +654,7 @@ export const sq: Record<TranslationKey, string> = {
   "payments.save": "Ruaj",
 
   "paymentSummary.title": "Përmbledhja e pagesave",
+  "paymentSummary.exportPdf": "Eksporto PDF",
   "paymentSummary.subtitle": "Sa është faturuar gjithsej, sa prej saj është paguar, dhe sa ka mbetur.",
   "paymentSummary.statCount": "Faturat",
   "paymentSummary.statInvoiced": "Faturuar gjithsej",

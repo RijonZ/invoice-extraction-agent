@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { EXPORT_CSV_URL, listInvoices } from "../api/client";
 import { UploadDropzone } from "../components/UploadDropzone";
 import { IconAlertTriangle, IconCheckCircle, IconClipboard, IconX } from "../components/icons";
+import { Pagination } from "../components/Pagination";
 import { useLanguage } from "../context/LanguageContext";
+import { usePagination } from "../hooks/usePagination";
 import { translateCategoryName } from "../i18n/categoryNames";
 import type { TranslationKey } from "../i18n/translations";
 import type { InvoiceStatus, InvoiceSummary } from "../types/invoice";
@@ -87,6 +89,8 @@ export function Dashboard() {
   }, [allInvoices]);
 
   const hasActiveFilters = search || fromDate || toDate || statusFilter !== "all";
+
+  const { pageItems, page, totalPages, next, prev } = usePagination(visibleInvoices);
 
   return (
     <div className="page">
@@ -189,78 +193,81 @@ export function Dashboard() {
             {allInvoices.length === 0 ? t("dashboard.emptyNoInvoices") : t("dashboard.emptyNoMatch")}
           </p>
         ) : (
-          <table className="invoice-table">
-            <thead>
-              <tr>
-                <th>{t("common.colVendor")}</th>
-                <th>{t("common.colClient")}</th>
-                <th>{t("common.colInvoiceNumber")}</th>
-                <th>{t("common.colDate")}</th>
-                <th>{t("common.colTotal")}</th>
-                <th>{t("invoiceDetail.category")}</th>
-                <th>{t("common.colPayment")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleInvoices.map((invoice) => (
-                <tr key={invoice.id}>
-                  <td>
-                    <Link to={`/invoices/${invoice.id}`}>{invoice.vendor_name ?? t("common.unknownVendor")}</Link>
-                  </td>
-                  <td className={invoice.client_name ? "" : "cell-muted"}>
-                    {invoice.client_name ?? "—"}
-                  </td>
-                  <td className={invoice.invoice_number ? "" : "cell-muted"}>
-                    {invoice.invoice_number ?? "—"}
-                  </td>
-                  <td className={invoice.invoice_date ? "" : "cell-muted"}>
-                    {invoice.invoice_date ?? "—"}
-                  </td>
-                  <td className="cell-amount">{formatMoney(invoice.total)}</td>
-                  <td className={invoice.category_name ? "" : "cell-muted"}>
-                    {invoice.category_name ? translateCategoryName(invoice.category_name, language) : t("common.uncategorized")}
-                  </td>
-                  <td>
-                    <span
-                      className={`status-badge status-${
-                        isOverdue(invoice)
-                          ? "error"
-                          : invoice.payment_status === "paid"
-                            ? "approved"
-                            : invoice.payment_status === "partial"
-                              ? "needs_review"
-                              : "processing"
-                      }`}
-                    >
-                      {isOverdue(invoice)
-                        ? t("common.overdue")
-                        : invoice.payment_status === "paid"
-                          ? t("common.paid")
-                          : invoice.payment_status === "partial"
-                            ? t("common.partial")
-                            : t("common.unpaid")}
-                    </span>
-                    {invoice.payment_status === "partial" && invoice.total !== null && Number(invoice.total) > 0 && (
-                      <div className="amount-progress">
-                        <span className="amount-progress-label">
-                          <span className="amount-progress-paid">{formatMoney(invoice.amount_paid)}</span>{" "}
-                          <span className="amount-progress-total">
-                            {t("payments.amountPaidOf", { total: formatMoney(invoice.total) })}
-                          </span>
-                        </span>
-                        <div className="amount-progress-track">
-                          <div
-                            className="amount-progress-fill"
-                            style={{ width: `${Math.min((Number(invoice.amount_paid) / Number(invoice.total)) * 100, 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </td>
+          <>
+            <table className="invoice-table">
+              <thead>
+                <tr>
+                  <th>{t("common.colVendor")}</th>
+                  <th>{t("common.colClient")}</th>
+                  <th>{t("common.colInvoiceNumber")}</th>
+                  <th>{t("common.colDate")}</th>
+                  <th>{t("common.colTotal")}</th>
+                  <th>{t("invoiceDetail.category")}</th>
+                  <th>{t("common.colPayment")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {pageItems.map((invoice) => (
+                  <tr key={invoice.id}>
+                    <td>
+                      <Link to={`/invoices/${invoice.id}`}>{invoice.vendor_name ?? t("common.unknownVendor")}</Link>
+                    </td>
+                    <td className={invoice.client_name ? "" : "cell-muted"}>
+                      {invoice.client_name ?? "—"}
+                    </td>
+                    <td className={invoice.invoice_number ? "" : "cell-muted"}>
+                      {invoice.invoice_number ?? "—"}
+                    </td>
+                    <td className={invoice.invoice_date ? "" : "cell-muted"}>
+                      {invoice.invoice_date ?? "—"}
+                    </td>
+                    <td className="cell-amount">{formatMoney(invoice.total)}</td>
+                    <td className={invoice.category_name ? "" : "cell-muted"}>
+                      {invoice.category_name ? translateCategoryName(invoice.category_name, language) : t("common.uncategorized")}
+                    </td>
+                    <td>
+                      <span
+                        className={`status-badge status-${
+                          isOverdue(invoice)
+                            ? "error"
+                            : invoice.payment_status === "paid"
+                              ? "approved"
+                              : invoice.payment_status === "partial"
+                                ? "needs_review"
+                                : "processing"
+                        }`}
+                      >
+                        {isOverdue(invoice)
+                          ? t("common.overdue")
+                          : invoice.payment_status === "paid"
+                            ? t("common.paid")
+                            : invoice.payment_status === "partial"
+                              ? t("common.partial")
+                              : t("common.unpaid")}
+                      </span>
+                      {invoice.payment_status === "partial" && invoice.total !== null && Number(invoice.total) > 0 && (
+                        <div className="amount-progress">
+                          <span className="amount-progress-label">
+                            <span className="amount-progress-paid">{formatMoney(invoice.amount_paid)}</span>{" "}
+                            <span className="amount-progress-total">
+                              {t("payments.amountPaidOf", { total: formatMoney(invoice.total) })}
+                            </span>
+                          </span>
+                          <div className="amount-progress-track">
+                            <div
+                              className="amount-progress-fill"
+                              style={{ width: `${Math.min((Number(invoice.amount_paid) / Number(invoice.total)) * 100, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Pagination page={page} totalPages={totalPages} onPrev={prev} onNext={next} />
+          </>
         )}
       </div>
     </div>

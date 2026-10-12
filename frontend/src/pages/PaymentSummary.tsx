@@ -108,6 +108,21 @@ export function PaymentSummary() {
 
   const hasActiveFilters = yearFilter !== null || clientFilter !== null || vendorFilter !== null || fromDate || toDate;
 
+  // Plain-language summary of whatever's currently filtered, shown only in
+  // the printed/exported PDF so it stands on its own without the
+  // interactive dropdown controls.
+  const activeFilterDescriptions = [
+    yearFilter !== null ? `${t("common.colInvoiceNumber")}: ${yearFilter}` : null,
+    clientFilter ? `${t("common.colClient")}: ${clientFilter}` : null,
+    vendorFilter ? `${t("common.colVendor")}: ${vendorFilter}` : null,
+    fromDate ? `${t("dashboard.fromDateAria")}: ${fromDate}` : null,
+    toDate ? `${t("dashboard.toDateAria")}: ${toDate}` : null,
+  ].filter((line): line is string => line !== null);
+
+  const handleExportPdf = () => {
+    window.print();
+  };
+
   const clearFilters = () => {
     setYearFilter(null);
     setClientFilter(null);
@@ -133,6 +148,42 @@ export function PaymentSummary() {
   const paidPct = filteredTotals.total > 0 ? Math.min((filteredTotals.paid / filteredTotals.total) * 100, 100) : 0;
   const remainingPct = 100 - paidPct;
 
+  function renderInvoiceRow(invoice: InvoiceSummary) {
+    const total = invoice.total !== null ? Number(invoice.total) : null;
+    const paid = Number(invoice.amount_paid ?? 0);
+    const remaining = total !== null ? Math.max(total - paid, 0) : null;
+    const isSettled = remaining !== null && remaining <= 0;
+    return (
+      <tr key={invoice.id}>
+        <td>
+          <Link to={`/invoices/${invoice.id}`}>{invoice.vendor_name ?? t("common.unknownVendor")}</Link>
+        </td>
+        <td className={invoice.client_name ? "" : "cell-muted"}>{invoice.client_name ?? "—"}</td>
+        <td className={invoice.invoice_number ? "" : "cell-muted"}>{invoice.invoice_number ?? "—"}</td>
+        <td className={invoice.invoice_date ? "" : "cell-muted"}>{invoice.invoice_date ?? "—"}</td>
+        <td className="cell-amount">{total !== null ? formatMoney(total) : "—"}</td>
+        <td className="cell-amount payment-summary-cell-paid">{formatMoney(paid)}</td>
+        <td className={`cell-amount ${isSettled ? "payment-summary-cell-settled" : "payment-summary-cell-owed"}`}>
+          {remaining !== null ? formatMoney(remaining) : "—"}
+        </td>
+      </tr>
+    );
+  }
+
+  const totalsRow = (
+    <tr className="payment-summary-totals-row">
+      <td colSpan={4}>
+        {t("paymentSummary.filteredTotalLabel")}
+        {hasActiveFilters ? ` (${t("paymentSummary.filteredLabel")})` : ""}
+      </td>
+      <td className="cell-amount">{formatMoney(filteredTotals.total)}</td>
+      <td className="cell-amount payment-summary-cell-paid">{formatMoney(filteredTotals.paid)}</td>
+      <td className={`cell-amount ${filteredTotals.remaining <= 0 ? "payment-summary-cell-settled" : "payment-summary-cell-owed"}`}>
+        {formatMoney(filteredTotals.remaining)}
+      </td>
+    </tr>
+  );
+
   return (
     <div className="page">
       <div className="page-heading">
@@ -140,7 +191,16 @@ export function PaymentSummary() {
           <h1>{t("paymentSummary.title")}</h1>
           <p className="page-subtitle">{t("paymentSummary.subtitle")}</p>
         </div>
+        <button type="button" className="export-link no-print" onClick={handleExportPdf}>
+          {t("paymentSummary.exportPdf")}
+        </button>
       </div>
+
+      {activeFilterDescriptions.length > 0 && (
+        <div className="print-only print-header">
+          <p className="print-filter-line">{activeFilterDescriptions.join(" · ")}</p>
+        </div>
+      )}
 
       <div className="stat-grid">
         <div className="card stat-card">
@@ -191,7 +251,7 @@ export function PaymentSummary() {
         </div>
       </div>
 
-      <div className="filter-bar" ref={dropdownRef}>
+      <div className="filter-bar no-print" ref={dropdownRef}>
         <div className="filter-dropdown-anchor">
           <div className={`filter-dropdown-trigger${yearFilter !== null ? " filter-dropdown-trigger-active" : ""}`}>
             <button className="filter-dropdown-trigger-label" onClick={() => toggleDropdown("invoice")}>
@@ -354,7 +414,7 @@ export function PaymentSummary() {
         )}
       </div>
 
-      <div className="card table-card">
+      <div className="card table-card no-print">
         {filteredInvoices.length === 0 ? (
           <p className="empty-state">
             {invoices.length === 0 ? t("dashboard.emptyNoInvoices") : t("dashboard.emptyNoMatch")}
@@ -373,53 +433,35 @@ export function PaymentSummary() {
                   <th>{t("paymentSummary.remainingLabel")}</th>
                 </tr>
               </thead>
-              <tbody>
-                {pageItems.map((invoice) => {
-                  const total = invoice.total !== null ? Number(invoice.total) : null;
-                  const paid = Number(invoice.amount_paid ?? 0);
-                  const remaining = total !== null ? Math.max(total - paid, 0) : null;
-                  const isSettled = remaining !== null && remaining <= 0;
-                  return (
-                    <tr key={invoice.id}>
-                      <td>
-                        <Link to={`/invoices/${invoice.id}`}>{invoice.vendor_name ?? t("common.unknownVendor")}</Link>
-                      </td>
-                      <td className={invoice.client_name ? "" : "cell-muted"}>{invoice.client_name ?? "—"}</td>
-                      <td className={invoice.invoice_number ? "" : "cell-muted"}>
-                        {invoice.invoice_number ?? "—"}
-                      </td>
-                      <td className={invoice.invoice_date ? "" : "cell-muted"}>{invoice.invoice_date ?? "—"}</td>
-                      <td className="cell-amount">{total !== null ? formatMoney(total) : "—"}</td>
-                      <td className="cell-amount payment-summary-cell-paid">{formatMoney(paid)}</td>
-                      <td
-                        className={`cell-amount ${isSettled ? "payment-summary-cell-settled" : "payment-summary-cell-owed"}`}
-                      >
-                        {remaining !== null ? formatMoney(remaining) : "—"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-              <tfoot>
-                <tr className="payment-summary-totals-row">
-                  <td colSpan={4}>
-                    {t("paymentSummary.filteredTotalLabel")}
-                    {hasActiveFilters ? ` (${t("paymentSummary.filteredLabel")})` : ""}
-                  </td>
-                  <td className="cell-amount">{formatMoney(filteredTotals.total)}</td>
-                  <td className="cell-amount payment-summary-cell-paid">{formatMoney(filteredTotals.paid)}</td>
-                  <td
-                    className={`cell-amount ${filteredTotals.remaining <= 0 ? "payment-summary-cell-settled" : "payment-summary-cell-owed"}`}
-                  >
-                    {formatMoney(filteredTotals.remaining)}
-                  </td>
-                </tr>
-              </tfoot>
+              <tbody>{pageItems.map(renderInvoiceRow)}</tbody>
+              <tfoot>{totalsRow}</tfoot>
             </table>
             <Pagination page={page} totalPages={totalPages} onPrev={prev} onNext={next} />
           </>
         )}
       </div>
+
+      {/* Print/export shows every filtered invoice on one continuous table,
+          not just the current on-screen page. */}
+      {filteredInvoices.length > 0 && (
+        <div className="print-only">
+          <table className="invoice-table payment-summary-table">
+            <thead>
+              <tr>
+                <th>{t("common.colVendor")}</th>
+                <th>{t("common.colClient")}</th>
+                <th>{t("common.colInvoiceNumber")}</th>
+                <th>{t("common.colDate")}</th>
+                <th>{t("common.colTotal")}</th>
+                <th>{t("paymentSummary.paidLabel")}</th>
+                <th>{t("paymentSummary.remainingLabel")}</th>
+              </tr>
+            </thead>
+            <tbody>{filteredInvoices.map(renderInvoiceRow)}</tbody>
+            <tfoot>{totalsRow}</tfoot>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
