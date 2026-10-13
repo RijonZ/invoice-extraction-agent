@@ -56,3 +56,8 @@ export async function getInvoiceFileBuffer(key: string): Promise<Buffer> {
   }
   return Buffer.concat(chunks);
 }
+
+export async function deleteInvoiceFile(key: string): Promise<void> {
+  await ensureBucket();
+  await minioClient.removeObject(env.minio.bucket, key);
+}

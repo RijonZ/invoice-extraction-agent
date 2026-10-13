@@ -1289,6 +1289,12 @@ button {
 
 /* ---------- Invoice detail ---------- */
 
+.detail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .detail-header {
   display: flex;
   align-items: center;
@@ -1470,6 +1476,17 @@ button {
 .inline-action:hover {
   border-color: var(--color-border-strong);
   color: var(--color-text);
+}
+
+.inline-action-danger {
+  color: var(--color-red-text);
+  border-color: var(--color-red-soft);
+}
+
+.inline-action-danger:hover {
+  background: var(--color-red-soft);
+  border-color: var(--color-red-text);
+  color: var(--color-red-text);
 }
 
 .link-button {

@@ -57,6 +57,10 @@ export function getInvoice(id: string): Promise<InvoiceDetailRecord> {
   return request(`/invoices/${id}`);
 }
 
+export async function deleteInvoice(id: string): Promise<void> {
+  await request(`/invoices/${id}`, { method: "DELETE" });
+}
+
 export function correctInvoice(
   id: string,
   corrections: Record<string, string | number | null>

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { pool } from "../db/pool.js";
 import { logAudit } from "../services/audit.js";
 import { processInvoice } from "../services/orchestrator.js";
-import { getInvoiceFileBuffer, getInvoiceFileUrl } from "../services/storage.js";
+import { deleteInvoiceFile, getInvoiceFileBuffer, getInvoiceFileUrl } from "../services/storage.js";
 
 export const invoicesRouter = Router();
 
@@ -233,6 +233,30 @@ invoicesRouter.post("/invoices/:id/reprocess", async (req, res) => {
 
   const updated = await pool.query(`${SELECT_INVOICE} WHERE i.id = $1`, [req.params.id]);
   res.json(updated.rows[0]);
+});
+
+// Removes the invoice permanently — the DB row (line items and correction
+// history cascade automatically) and the stored file. For undoing a wrong
+// upload, not for correcting a wrong extraction (use PATCH .../correct).
+invoicesRouter.delete("/invoices/:id", async (req, res) => {
+  const fileRow = await pool.query("SELECT id, created_by, file_key FROM invoices WHERE id = $1", [
+    req.params.id,
+  ]);
+  const invoice = fileRow.rows[0];
+  if (!invoice || (req.user?.role !== "admin" && invoice.created_by !== req.user?.id)) {
+    res.status(404).json({ error: "Invoice not found" });
+    return;
+  }
+
+  await pool.query("DELETE FROM invoices WHERE id = $1", [req.params.id]);
+
+  if (invoice.file_key) {
+    await deleteInvoiceFile(invoice.file_key).catch(() => {});
+  }
+
+  await logAudit(req.user?.id ?? null, "invoice.delete", "invoice", req.params.id, {});
+
+  res.status(204).end();
 });
 
 invoicesRouter.patch("/invoices/:id/category", async (req, res) => {

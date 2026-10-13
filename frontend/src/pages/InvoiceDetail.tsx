@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   correctInvoice,
+  deleteInvoice,
   getInvoice,
   listCategories,
   reprocessInvoice,
@@ -45,6 +46,7 @@ export function InvoiceDetail() {
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isReprocessing, setIsReprocessing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const load = useCallback(() => {
     if (!id) return;
@@ -97,6 +99,19 @@ export function InvoiceDetail() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!id) return;
+    if (!window.confirm(t("invoiceDetail.deleteConfirm"))) return;
+    setIsDeleting(true);
+    try {
+      await deleteInvoice(id);
+      navigate("/");
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : String(err));
+      setIsDeleting(false);
+    }
+  };
+
   if (!invoice) {
     return (
       <div className="page">
@@ -139,7 +154,17 @@ export function InvoiceDetail() {
 
       <div className="detail-header">
         <h1>{invoice.vendor_name ?? t("common.unknownVendor")}</h1>
-        <StatusBadge status={invoice.status} />
+        <div className="detail-header-actions">
+          <StatusBadge status={invoice.status} />
+          <button
+            type="button"
+            className="inline-action inline-action-danger"
+            onClick={() => void handleDelete()}
+            disabled={isDeleting}
+          >
+            {isDeleting ? t("invoiceDetail.deleting") : t("invoiceDetail.delete")}
+          </button>
+        </div>
       </div>
       <p className="detail-meta">
         {invoice.invoice_number
