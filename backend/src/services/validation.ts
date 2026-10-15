@@ -23,7 +23,11 @@ export function validateInvoice(
     errors.push(`Required field "${field}" could not be extracted from the document.`);
   }
 
-  if (data.line_items.length === 0) {
+  // Only worth flagging when there's other evidence this is a structured
+  // invoice (a subtotal or tax figure) that's missing its line-item
+  // breakdown — a bare total with no subtotal/tax (bank transaction
+  // confirmations, simple receipts) legitimately has no line items either.
+  if (data.line_items.length === 0 && (data.subtotal !== null || data.tax !== null)) {
     errors.push("No line items were extracted.");
   }
 

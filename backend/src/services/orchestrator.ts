@@ -47,6 +47,21 @@ export async function processInvoice(
       settings.extraction_model,
       settings.max_extraction_attempts
     );
+    if (!data.is_invoice) {
+      await pool.query(
+        `UPDATE invoices SET status = 'error', validation_errors = $1, raw_extraction = $2, updated_at = now()
+         WHERE id = $3`,
+        [
+          JSON.stringify([
+            "This file doesn't appear to be an invoice, receipt, or payment confirmation — nothing was extracted.",
+          ]),
+          JSON.stringify(data),
+          invoiceId,
+        ]
+      );
+      return;
+    }
+
     const validationErrors = validateInvoice(data, missingCriticalFields, settings.amount_tolerance);
     const { date: invoiceDate, wasInvalid } = normalizeDate(data.invoice_date);
     if (wasInvalid) {

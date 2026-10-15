@@ -15,6 +15,13 @@ export const lineItemSchema = z
 
 export const extractedInvoiceSchema = z
   .object({
+    is_invoice: z
+      .boolean()
+      .describe(
+        "true if this document is a genuine invoice, receipt, bill, or payment/bank " +
+          "transaction confirmation; false for anything else (reports, plans, articles, " +
+          "resumes, contracts, unrelated correspondence, etc.)"
+      ),
     vendor_name: z.string().nullable(),
     client_name: z.string().nullable(),
     invoice_number: z.string().nullable(),
